@@ -1,8 +1,8 @@
-const express = require("express");
-const { ApolloServer } = require("@apollo/server");
-const { expressMiddleware } = require("@apollo/server/express4");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import {expressMiddleware } from '@apollo/server/express4';
+import bodyParser from 'body-parser';
+import cors from "cors"
 
 const typeDefs = `
     type Todo {
