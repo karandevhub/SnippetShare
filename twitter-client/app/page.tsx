@@ -9,6 +9,8 @@ import { TbMessageSearch } from "react-icons/tb";
 import { FaRegBookmark } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import FeedCard from "@/components/Feedcard/page";
+import GoogleLoginButton from "@/components/GoogleLoginButton/GoogleLoginButton";
+
 interface TwitterSidebarButton {
   title: string;
   icon: React.ReactNode;
@@ -91,7 +93,12 @@ export default function Home() {
         <FeedCard />
       </div>
       {/* column 3 */}
-      <div className="col-span-3"></div>
+      <div className="col-span-3 p-5">
+        <div className="flex flex-col border border-gray-600 p-4 rounded-xl">
+          <h1 className="text-xl text-center">New To Twitter?</h1>
+         <GoogleLoginButton/>
+        </div>
+      </div>
     </div>
   );
 }
