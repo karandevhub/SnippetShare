@@ -1,21 +1,19 @@
 "use client";
 
-import { GoogleLogin } from "@react-oauth/google";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
-export default function GoogleLoginButton() {
+interface GoogleLoginProps {
+  onSuccess: (credentialResponse: CredentialResponse) => void;
+  onError: () => void;
+}
+
+export default function GoogleLoginButton({
+  onSuccess,
+  onError,
+}: GoogleLoginProps) {
   return (
     <div className="w-full flex justify-center mt-4">
-
-        <GoogleLogin
-        width={300}
-          onSuccess={(credentialResponse) => {
-            console.log(credentialResponse);
-          }}
-          onError={() => {
-            console.log('Login Failed');
-          }}
-        />
-    
+      <GoogleLogin width={300} onSuccess={onSuccess} onError={onError} />
     </div>
   );
 }
