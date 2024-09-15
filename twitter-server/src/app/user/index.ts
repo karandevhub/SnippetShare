@@ -1,5 +1,5 @@
 import { types } from "./types";
 import { queries } from "./queries";
-import { reslovers } from "./resolvers";
+import { resolvers } from "./resolvers";
 
-export const User={types , queries , reslovers}
+export const User = { types, queries, resolvers };

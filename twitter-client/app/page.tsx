@@ -96,7 +96,7 @@ export default function Home() {
       <div className="col-span-3 p-5">
         <div className="flex flex-col border border-gray-600 p-4 rounded-xl">
           <h1 className="text-xl text-center">New To Twitter?</h1>
-         <GoogleLoginButton/>
+          <GoogleLoginButton />
         </div>
       </div>
     </div>

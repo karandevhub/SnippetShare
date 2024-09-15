@@ -3,7 +3,6 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { prismaClient } from "../client/db";  // Ensure this is correctly configured
 import { User } from "./user";
 
 const typeDefs = `
@@ -15,9 +14,13 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-      ...User.reslovers.queries
+      ...User.resolvers.queries
   },
 };
+
+
+
+
 
 export async function startServer() {
   const app = express();
