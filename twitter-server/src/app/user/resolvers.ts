@@ -40,22 +40,32 @@ const queries = {
       },
     });
 
-    if (!user) {
-      await prismaClient.user.create({
-        data: {
-          email: data.email,
-          firstName: data.given_name,
-          lastName: data.family_name,
-          profileImageURL: data.picture,
-        },
-      });
+   
+
+    try {
+      if (!user) {
+        await prismaClient.user.create({
+          data: {
+            email: data.email,
+            firstName: data.given_name,
+            lastName: data.family_name,
+            profileImageURL: data.picture,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user");
     }
+    
 
     const userIndb = await prismaClient.user.findUnique({
       where: {
         email: data.email,
       },
     });
+
+    console.log("user in db")
 
     if (!userIndb) {
       throw new Error("User not found in the database");

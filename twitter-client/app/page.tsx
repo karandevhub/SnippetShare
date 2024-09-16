@@ -14,6 +14,8 @@ import { CredentialResponse } from "@react-oauth/google";
 import toast from "react-hot-toast";
 import { graphQLClient } from "@/client/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+import { useCurrentUser } from "@/hooks/user";
+import { useQueryClient } from "react-query";
 
 interface TwitterSidebarButton {
   title: string;
@@ -56,6 +58,10 @@ const twitterSidebarButtons: TwitterSidebarButton[] = [
 ];
 
 export default function Home() {
+  const { user } = useCurrentUser();
+  const queryClient = useQueryClient();
+  console.log("user", user);
+
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
       const googleToken = cred.credential;
@@ -76,6 +82,8 @@ export default function Home() {
 
         if (verifyGoogleToken)
           localStorage.setItem("google_token", verifyGoogleToken);
+
+        await queryClient.invalidateQueries(["current-user"]);
       } catch (error) {
         console.error("Error verifying Google token:", error);
         toast.error("Failed to verify Google token");
@@ -126,15 +134,18 @@ export default function Home() {
         <FeedCard />
       </div>
       {/* column 3 */}
-      <div className="col-span-12 md:col-span-3 p-5">
-        <div className="flex flex-col border border-gray-600 p-4 rounded-xl">
-          <h1 className="text-xl text-center">New To Twitter?</h1>
-          <GoogleLoginButton
-            onSuccess={handleLoginWithGoogle}
-            onError={() => toast.error("Login failed")}
-          />
+      {true && (
+        <div className="col-span-12 md:col-span-3 p-5">
+          <div className="flex flex-col border border-gray-600 p-4 rounded-xl">
+            <h1 className="text-xl text-center">New To Twitter?</h1>
+
+            <GoogleLoginButton
+              onSuccess={handleLoginWithGoogle}
+              onError={() => toast.error("Login failed")}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
