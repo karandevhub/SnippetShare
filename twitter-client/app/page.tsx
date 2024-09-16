@@ -8,6 +8,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { TbMessageSearch } from "react-icons/tb";
 import { FaRegBookmark } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
+import { GoFileMedia } from "react-icons/go";
 import FeedCard from "@/components/Feedcard/page";
 import GoogleLoginButton from "@/components/GoogleLoginButton/GoogleLoginButton";
 import { CredentialResponse } from "@react-oauth/google";
@@ -60,7 +61,12 @@ const twitterSidebarButtons: TwitterSidebarButton[] = [
 export default function Home() {
   const { user } = useCurrentUser();
   const queryClient = useQueryClient();
-  console.log("user", user);
+  const handleImagePick = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "images/*");
+    input.click();
+  };
 
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
@@ -92,6 +98,14 @@ export default function Home() {
     []
   );
 
+  const handleLogout = async () => {
+    localStorage.removeItem("google_token");
+    await queryClient.invalidateQueries(["current-user"]);
+    await queryClient.refetchQueries(["current-user"]);
+
+    toast.success("logged out");
+  };
+
   return (
     <div className="grid grid-cols-12 h-screen w-screen px-5 md:px-10">
       {/* column 1 */}
@@ -122,6 +136,31 @@ export default function Home() {
       </div>
       {/* Column 2 */}
       <div className="col-span-12 md:col-span-5 border-l border-gray-600 border-r h-screen overflow-scroll overflow-x-hidden no-scrollbar">
+        <div className="p-4 border-b border-gray-600">
+          <div className="flex items-start">
+            {user && (
+              <img
+                src={user?.profileImageURL}
+                alt="profile-image"
+                className="rounded-full w-12 h-12 mr-3"
+              />
+            )}
+            <div className="flex-1">
+              <textarea
+                placeholder="What's happening?"
+                className="w-full border-none focus:outline-none bg-transparent text-white resize-none"
+                rows={3}
+              ></textarea>
+              <div className="flex justify-between items-center mt-2">
+                <GoFileMedia onClick={handleImagePick} className="text-xl" />
+                <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+                  Tweet
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <FeedCard />
         <FeedCard />
         <FeedCard />
@@ -134,18 +173,29 @@ export default function Home() {
         <FeedCard />
       </div>
       {/* column 3 */}
-      {true && (
-        <div className="col-span-12 md:col-span-3 p-5">
-          <div className="flex flex-col border border-gray-600 p-4 rounded-xl">
-            <h1 className="text-xl text-center">New To Twitter?</h1>
+
+      <div className="col-span-12 md:col-span-3 p-5">
+        {!user && (
+          <div className="flex flex-col border border-gray-600 p-4 rounded-xl mb-4">
+            <h1 className="text-xl text-center mb-4">New To Twitter?</h1>
 
             <GoogleLoginButton
               onSuccess={handleLoginWithGoogle}
               onError={() => toast.error("Login failed")}
             />
           </div>
-        </div>
-      )}
+        )}
+        {user && (
+          <div className="flex flex-col border border-gray-600 p-4 rounded-xl">
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-200"
+              onClick={handleLogout}
+            >
+              Log out
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

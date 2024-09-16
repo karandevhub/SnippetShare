@@ -6,18 +6,33 @@ import cors from "cors";
 import { User } from "./user";
 import { GraphqlContext } from "../interfaces";
 import JWTService from "../services/jwt";
+import { Tweet } from "./tweet";
 
 const typeDefs = `
       ${User.types}
+      ${Tweet.types}
+
+
       type Query {
         ${User.queries}
+        ${Tweet.queries}
+      }
+
+      type Mutation {
+       ${Tweet.mutations}
       }
 `;
 
 const resolvers = {
   Query: {
     ...User.resolvers.queries,
+    ...Tweet.resolvers.queries,
   },
+  Mutation: {
+    ...Tweet.resolvers.mutations,
+  },
+  ...Tweet.resolvers.extraResolvers,
+  ...User.resolvers.extraResolvers,
 };
 
 export async function startServer() {
@@ -37,7 +52,7 @@ export async function startServer() {
     "/graphql",
     expressMiddleware(server, {
       context: async ({ req, res }) => {
-        console.log(req.headers)
+        console.log(req.headers);
         return {
           user: req.headers.authorization
             ? JWTService.decodeToken(
