@@ -14,9 +14,14 @@ class JWTService {
     return token;
   }
 
-  public static decodeToken(token:string){
-    console.log("decode token",token)
-    return JWT.verify(token, JWT_SECRET) as JWTUser;
+  public static decodeToken(token: string) {
+    console.log("decode token", token);
+    if (!token) throw new Error("Token not provided");
+    try {
+      return JWT.verify(token, JWT_SECRET) as JWTUser;
+    } catch (error) {
+      return null;
+    }
   }
 }
 

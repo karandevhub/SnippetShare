@@ -2,6 +2,7 @@ import axios from "axios";
 import { prismaClient } from "../../client/db";
 import JWTService from "../../services/jwt";
 import { GraphqlContext } from "../../interfaces";
+import { User } from "@prisma/client";
 
 interface GoogleTokenInfo {
   iss: string; // Issuer
@@ -40,15 +41,20 @@ const queries = {
       },
     });
 
-    if (!user) {
-      await prismaClient.user.create({
-        data: {
-          email: data.email,
-          firstName: data.given_name,
-          lastName: data.family_name,
-          profileImageURL: data.picture,
-        },
-      });
+    try {
+      if (!user) {
+        await prismaClient.user.create({
+          data: {
+            email: data.email,
+            firstName: data.given_name,
+            lastName: data.family_name,
+            profileImageURL: data.picture,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user");
     }
 
     const userIndb = await prismaClient.user.findUnique({
@@ -56,6 +62,8 @@ const queries = {
         email: data.email,
       },
     });
+
+    console.log("user in db");
 
     if (!userIndb) {
       throw new Error("User not found in the database");
@@ -74,4 +82,14 @@ const queries = {
   },
 };
 
-export const resolvers = { queries };
+const extraResolvers = {
+  User: {
+    tweets: {
+      resolve(parent: User) {
+        return prismaClient.tweet.findMany({ where: { authorId: parent.id } });
+      },
+    },
+  },
+};
+
+export const resolvers = { queries, extraResolvers };
