@@ -1,6 +1,9 @@
 import { graphQLClient } from "@/client/api";
+import { CreateTweetData } from "@/gql/graphql";
+import { createTweet } from "@/graphql/mutation/tweet";
 import { getAllTweetsQuery } from "@/graphql/query/tweets";
-import { useQuery } from "react-query";
+import toast from "react-hot-toast";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 export const useGetAllTweets = () => {
   const query = useQuery({
@@ -10,4 +13,19 @@ export const useGetAllTweets = () => {
     refetchOnWindowFocus: true, // Refetch on window focus
   });
   return { ...query, tweets: query.data?.getAllTweets };
+};
+
+export const useCreateTweet = () => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (payload: CreateTweetData) =>
+      graphQLClient.request(createTweet, { payload }),
+    onMutate: () => toast.loading("creating..."),
+    onSuccess: () => {
+      toast.dismiss();
+      toast.success("Tweet created successfully!");
+      queryClient.invalidateQueries(["get-all-Tweets"]);
+    },
+  });
+  return mutation;
 };

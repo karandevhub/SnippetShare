@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { FaTwitter } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import { IoSearch } from "react-icons/io5";
@@ -17,7 +17,7 @@ import { graphQLClient } from "@/client/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 import { useCurrentUser } from "@/hooks/user";
 import { useQueryClient } from "react-query";
-import { useGetAllTweets } from "@/hooks/tweet";
+import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
 import { Tweet } from "@/gql/graphql";
 
 interface TwitterSidebarButton {
@@ -63,6 +63,9 @@ const twitterSidebarButtons: TwitterSidebarButton[] = [
 export default function Home() {
   const { user } = useCurrentUser();
   const { tweets } = useGetAllTweets();
+  const { mutate } = useCreateTweet();
+
+  const [content, setContent] = useState("");
 
   console.log(tweets);
   const queryClient = useQueryClient();
@@ -111,6 +114,22 @@ export default function Home() {
     toast.success("logged out");
   };
 
+  const handleSubmit = async () => {
+    if (!content) {
+      toast.error("Please enter a tweet");
+      return;
+    }
+    try {
+      await mutate({
+        content,
+      });
+      setContent("");
+    } catch (error) {
+      console.error("Error creating tweet:", error);
+      toast.error("Failed to create tweet");
+    }
+  };
+
   return (
     <div className="grid grid-cols-12 h-screen w-screen px-5 md:px-10">
       {/* column 1 */}
@@ -152,13 +171,17 @@ export default function Home() {
             )}
             <div className="flex-1">
               <textarea
+                onChange={(e) => setContent(e.target.value)}
                 placeholder="What's happening?"
                 className="w-full border-none focus:outline-none bg-transparent text-white resize-none"
                 rows={3}
               ></textarea>
               <div className="flex justify-between items-center mt-2">
                 <GoFileMedia onClick={handleImagePick} className="text-xl" />
-                <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full"
+                >
                   Tweet
                 </button>
               </div>
