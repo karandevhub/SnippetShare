@@ -17,6 +17,8 @@ import { graphQLClient } from "@/client/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 import { useCurrentUser } from "@/hooks/user";
 import { useQueryClient } from "react-query";
+import { useGetAllTweets } from "@/hooks/tweet";
+import { Tweet } from "@/gql/graphql";
 
 interface TwitterSidebarButton {
   title: string;
@@ -60,6 +62,9 @@ const twitterSidebarButtons: TwitterSidebarButton[] = [
 
 export default function Home() {
   const { user } = useCurrentUser();
+  const { tweets } = useGetAllTweets();
+
+  console.log(tweets);
   const queryClient = useQueryClient();
   const handleImagePick = () => {
     const input = document.createElement("input");
@@ -160,17 +165,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
-        <FeedCard />
+        {tweets?.map((tweet) => (
+          <FeedCard key={tweet?.id} data={tweet as Tweet} />
+        ))}
       </div>
       {/* column 3 */}
 

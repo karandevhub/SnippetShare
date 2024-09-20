@@ -4,26 +4,31 @@ import { LiaComment } from "react-icons/lia";
 import { BiRepost } from "react-icons/bi";
 import { IoIosHeartEmpty } from "react-icons/io";
 import { HiOutlineUpload } from "react-icons/hi";
+import { Tweet } from "@/gql/graphql";
 
-const FeedCard: React.FC = () => {
+interface FeedCardProps {
+  data: Tweet;
+}
+
+const FeedCard: React.FC<FeedCardProps> = (props) => {
+  const { data } = props;
   return (
     <div className="grid grid-cols-12 border-gray-600 border-t px-4 pt-4 hover:bg-gray-400 hover:bg-opacity-5">
       <div className="col-span-1 p-2">
-        <Image
-          src="https://avatars.githubusercontent.com/u/119488379?v=4"
-          alt="profile-image"
-          className="rounded-full border-gray-500 border-[0.1px]"
-          width={100}
-          height={100}
-        />
+        {data?.author && (
+          <Image
+            src={data?.author?.profileImageURL as string}
+            alt="profile-image"
+            className="rounded-full border-gray-500 border-[0.1px]"
+            width={100}
+            height={100}
+          />
+        )}
       </div>
       <div className="col-span-11">
-        <h5>Karan Kumar</h5>
+        <h5>{data.author?.firstName}</h5>
         <p>
-          If 8% people own the car it means on an average 32% people are using
-          it. These highways are used for not just personal travel but for
-          freight and logistics. So these non-sense videos are series of paid
-          farce.
+          {data.content}
         </p>
         <div className="flex justify-between text-gray-600 py-3">
           <div className="flex items-center hover:text-blue-600">
